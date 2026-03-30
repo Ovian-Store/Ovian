@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import { Routes, Route, Router} from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Home from "./Pages/Home";
@@ -10,18 +11,39 @@ import CategoryDetail from "./Pages/CategoryDetail";
 import AdminDashboard from "./Pages/AdminDashboard";
 import ResetPassword from "./Pages/ResetPassword";
 import UpdatePassword from "./Pages/UpdatePassword";
- 
 
+import { supabase } from "./supabaseClient";
 export default function App() {
+
+
+  
   const [user, setUser] = useState(null);
   const handleLogin = (u) => setUser(u);
   const handleLogout = () => setUser(null);
   const handleSignup = (u) => setUser(u);
 
+
+  useEffect(() => {
+    // Check if already logged in
+    const session = supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+    });
+
+    // Listen for changes
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+
   return (
     <div className="app-overlay text-white">
       <Navbar user={user} onLogout={handleLogout} />
-      <Router basename="/Ovian">
+      
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
@@ -33,7 +55,7 @@ export default function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/update-password" element={<UpdatePassword />} />
         </Routes>
-      </Router>
+    
     </div>
   );
 }
