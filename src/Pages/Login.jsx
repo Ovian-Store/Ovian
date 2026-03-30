@@ -20,6 +20,12 @@ export default function Login({ onLogin }) {
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({ provider: "google" });
     if (error) alert(error.message);
+    await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "https://ovian-store.github.io/Ovian/#/",
+    },
+  })
   };
 
   return (
