@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ensure full height */
+html, body, #root {
+  height: 100%;
+}
+
+/* Global background image */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: white;
+  background-image: url("/background.jpg"); /* image must be in public/ */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Transparent overlay for the app */
+.app-overlay {
+  background-color: rgba(0, 0, 0, 0.55);
+  min-height: 100%;
+  backdrop-filter: blur(6px);
+}
+
+/* Semi-transparent card style */
+.card {
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+/* White button style */
+.btn-white {
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #000;
+  font-weight: 600;
+}
