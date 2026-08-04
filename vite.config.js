@@ -8,4 +8,5 @@ export default defineConfig({
     tailwindcss(),
   ],
  
+  base: '/',   // or just '/' for Pages
 })
