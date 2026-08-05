@@ -13,12 +13,13 @@ export default function Home() {
     try {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, desc, productimagelink, price, category, created_at")
-        .order("created_at", { ascending: false })
+        .select("id, name, desc, productimagelink, price, category") // ✅ match your table
+        .order("id", { ascending: true }) // ✅ safer ordering
         .range((pageNum - 1) * 8, pageNum * 8 - 1);
 
       if (error) throw error;
 
+      console.log("Fetched products:", data);
       setItems((prev) => [...prev, ...data]);
       setPage(pageNum);
     } catch (err) {
@@ -28,7 +29,7 @@ export default function Home() {
     }
   };
 
-  // ✅ Fix: wrap in async function inside useEffect
+  // ✅ Initial load (only one call)
   useEffect(() => {
     const loadInitial = async () => {
       await fetchProducts(1);
@@ -36,6 +37,7 @@ export default function Home() {
     loadInitial();
   }, []);
 
+  // ✅ Infinite scroll
   useEffect(() => {
     const handleScroll = () => {
       if (
