@@ -10,23 +10,30 @@ export default function Home() {
 
   const fetchProducts = async (pageNum = 1) => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("products")
-      .select("id, name, desc, productimagelink, price, category, created_at") // ✅ match your table columns
-      .order("created_at", { ascending: false })
-      .range((pageNum - 1) * 8, pageNum * 8 - 1); // pagination
+    try {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, name, desc, productimagelink, price, category, created_at")
+        .order("created_at", { ascending: false })
+        .range((pageNum - 1) * 8, pageNum * 8 - 1);
 
-    if (error) {
-      console.error(error);
-    } else {
+      if (error) throw error;
+
       setItems((prev) => [...prev, ...data]);
       setPage(pageNum);
+    } catch (err) {
+      console.error("Supabase fetch error:", err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  // ✅ Fix: wrap in async function inside useEffect
   useEffect(() => {
-    fetchProducts(1); // load first page
+    const loadInitial = async () => {
+      await fetchProducts(1);
+    };
+    loadInitial();
   }, []);
 
   useEffect(() => {
