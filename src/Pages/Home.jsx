@@ -12,9 +12,9 @@ export default function Home() {
     setLoading(true);
     const { data, error } = await supabase
       .from("products")
-      .select("*")
+      .select("id, name, desc, image_url, price, category, created_at") // ✅ match your table columns
       .order("created_at", { ascending: false })
-      .range((pageNum - 1) * 8, pageNum * 8 - 1); // ✅ pagination
+      .range((pageNum - 1) * 8, pageNum * 8 - 1); // pagination
 
     if (error) {
       console.error(error);
@@ -64,6 +64,9 @@ export default function Home() {
             <div className="p-4 text-center">
               <h3 className="text-white font-semibold">{item.name}</h3>
               <p className="text-gray-300 text-sm mt-1">{item.desc}</p>
+              {item.price && (
+                <p className="text-yellow-400 font-bold mt-2">₹{item.price}</p>
+              )}
               <button
                 onClick={() => navigate(`/product/${item.id}`, { state: item })}
                 className="mt-3 btn-white py-1 px-3 rounded"
