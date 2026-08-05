@@ -12,7 +12,7 @@ export default function Home() {
     setLoading(true);
     const { data, error } = await supabase
       .from("products")
-      .select("id, name, desc, image_url, price, category, created_at") // ✅ match your table columns
+      .select("id, name, desc, productimagelink, price, category, created_at") // ✅ match your table columns
       .order("created_at", { ascending: false })
       .range((pageNum - 1) * 8, pageNum * 8 - 1); // pagination
 
@@ -57,7 +57,7 @@ export default function Home() {
             className="card rounded-lg shadow hover:scale-105 transition-transform"
           >
             <img
-              src={item.image_url}
+              src={item.productimagelink}
               alt={item.name}
               className="w-full h-48 object-cover rounded-t-lg"
             />
