@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import Home from "./Home";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -16,8 +17,11 @@ export default function Login({ onLogin }) {
     if (error) {
       alert(error.message);
     } else {
+      <Home></Home>
       onLogin(data.user);
+      
       navigate("/");
+
     }
   };
 
@@ -45,6 +49,7 @@ export default function Login({ onLogin }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-3 rounded bg-transparent border border-yellow-400 text-white placeholder-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            
           />
           <input
             type="password"
