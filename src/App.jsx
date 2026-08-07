@@ -14,7 +14,7 @@ import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import CartPage from "./Pages/CartPage";
 import Checkout from "./Pages/Checkout";
 import OrdersListAdmin from "./Pages/Admin/OrdersList"; // admin orders
-import OrdersPage from "./Pages/OrdersPage"; // optional: user orders
+//import OrdersPage from "./Pages/OrdersPage"; // optional: user orders
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -48,7 +48,7 @@ export default function App() {
         <Route path="/products/:id" element={<CategoryDetail />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/orders" element={<OrdersPage />} />
+        {/* <Route path="/orders" element={<OrdersPage />} /> */}
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/orders" element={<OrdersListAdmin />} />
         <Route path="/reset-password" element={<ResetPassword />} />
