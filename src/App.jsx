@@ -7,10 +7,10 @@ import Signup from "./Pages/Signup";
 import ProductId from "./Pages/ProductId";
 import Products from "./Pages/Products";
 import CategoryDetail from "./Pages/CategoryDetail";
-import AdminDashboard from "./Pages/AdminDashboard";
 import ResetPassword from "./Pages/ResetPassword";
 import UpdatePassword from "./Pages/UpdatePassword";
 import { supabase } from "./supabaseClient";
+import AdminDashboard from "./Pages/Admin/AdminDashboard";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -45,6 +45,8 @@ export default function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/update-password" element={<UpdatePassword />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        
       </Routes>
     </div>
   );
