@@ -12,7 +12,6 @@ export default function ProductId() {
   const [loading, setLoading] = useState(false);
   const [qty, setQty] = useState(1);
 
-  // If product not passed via state, fetch by id
   useEffect(() => {
     if (!product && id) {
       (async () => {
@@ -44,7 +43,8 @@ export default function ProductId() {
   const handleAddToCart = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
       if (!user) {
         alert("Please log in to add to cart.");
         setLoading(false);
@@ -52,24 +52,29 @@ export default function ProductId() {
       }
 
       // Upsert cart item (unique constraint user_id + product_id)
-      const { error } = await supabase.from("cart_items").upsert({
+      const payload = {
         user_id: user.id,
         product_id: product.id,
         quantity: qty
-      }, { onConflict: "(user_id, product_id)" });
+      };
 
+      const { data, error } = await supabase
+        .from("cart_items")
+        .upsert([payload], { onConflict: "user_id,product_id" });
+
+      console.log("Add to cart result:", { data, error });
       if (error) throw error;
       alert("Added to cart");
     } catch (err) {
-      console.error("Add to cart failed:", err.message || err);
-      alert("Add to cart failed. Try again.");
+      console.error("Add to cart failed:", err);
+      // If Supabase returns an object, show message if available
+      alert(err?.message || "Add to cart failed. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleOrderNow = () => {
-    // Navigate to checkout with product and qty
     navigate("/checkout", { state: { items: [{ product, quantity: qty }] } });
   };
 

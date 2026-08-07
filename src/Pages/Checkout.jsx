@@ -12,11 +12,11 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("cod"); // cod or online
   const [loading, setLoading] = useState(false);
 
-  // If no items passed, load from cart
   useEffect(() => {
     if (!passed) {
       (async () => {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: userData } = await supabase.auth.getUser();
+        const user = userData?.user;
         if (!user) {
           alert("Please log in to checkout.");
           navigate("/login");
@@ -44,7 +44,8 @@ export default function Checkout() {
   const handlePlaceOrder = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
       if (!user) {
         alert("Please log in to place order.");
         setLoading(false);
@@ -55,8 +56,49 @@ export default function Checkout() {
         setLoading(false);
         return;
       }
-      // 1) Insert order and get id
+
       const total = computeTotal();
+
+      // If online payment, create order with pending_payment and redirect to payment page
+      if (paymentMethod === "online") {
+        const { data: orderData, error: orderError } = await supabase
+          .from("orders")
+          .insert({
+            user_id: user.id,
+            total_amount: total,
+            status: "pending_payment",
+            delivery_address: address,
+            payment_method: "online"
+          })
+          .select("id")
+          .single();
+
+        console.log("Create order (online) result:", { orderData, orderError });
+        if (orderError) throw orderError;
+
+        const orderId = orderData.id;
+
+        // Insert order_items
+        const itemsToInsert = items.map(it => ({
+          order_id: orderId,
+          product_id: it.product.id,
+          quantity: it.quantity,
+          unit_price: it.product.price || 0
+        }));
+
+        const { error: itemsError } = await supabase.from("order_items").insert(itemsToInsert);
+        console.log("Insert order_items:", itemsError);
+        if (itemsError) throw itemsError;
+
+        // Clear cart
+        await supabase.from("cart_items").delete().eq("user_id", user.id);
+
+        // Redirect to payment page (stub). Replace with real gateway flow later.
+        navigate(`/payment?orderId=${orderId}`);
+        return;
+      }
+
+      // Pay on delivery flow
       const { data: orderData, error: orderError } = await supabase
         .from("orders")
         .insert({
@@ -64,15 +106,15 @@ export default function Checkout() {
           total_amount: total,
           status: "pending",
           delivery_address: address,
-          payment_method: paymentMethod
+          payment_method: "cod"
         })
         .select("id")
         .single();
 
+      console.log("Create order (cod) result:", { orderData, orderError });
       if (orderError) throw orderError;
       const orderId = orderData.id;
 
-      // 2) Insert order_items
       const itemsToInsert = items.map(it => ({
         order_id: orderId,
         product_id: it.product.id,
@@ -81,16 +123,17 @@ export default function Checkout() {
       }));
 
       const { error: itemsError } = await supabase.from("order_items").insert(itemsToInsert);
+      console.log("Insert order_items:", itemsError);
       if (itemsError) throw itemsError;
 
-      // 3) Clear cart items for this user (if any)
+      // Clear cart
       await supabase.from("cart_items").delete().eq("user_id", user.id);
 
       alert("Order placed successfully!");
-      navigate("/orders"); // or admin/orders or home
+      navigate("/orders");
     } catch (err) {
       console.error("Place order failed:", err);
-      alert("Order failed. Please try again.");
+      alert(err?.message || "Order failed. Please try again.");
     } finally {
       setLoading(false);
     }
