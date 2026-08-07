@@ -13,13 +13,13 @@ export default function Home() {
     try {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, desc, productimagelink, price, category") // ✅ match your table
-        .order("id", { ascending: true }) // ✅ safer ordering
+        .select("id, name, description, productimagelink, images, price, category")
+        .order("id", { ascending: true })
         .range((pageNum - 1) * 8, pageNum * 8 - 1);
 
       if (error) throw error;
 
-      console.log("Fetched products:", data);
+      console.log("Fetched products:", data); // ✅ Debug log
       setItems((prev) => [...prev, ...data]);
       setPage(pageNum);
     } catch (err) {
@@ -29,12 +29,9 @@ export default function Home() {
     }
   };
 
-  // ✅ Initial load (only one call)
+  // ✅ Initial load
   useEffect(() => {
-    const loadInitial = async () => {
-      await fetchProducts(1);
-    };
-    loadInitial();
+    fetchProducts(1);
   }, []);
 
   // ✅ Infinite scroll
@@ -72,7 +69,23 @@ export default function Home() {
             />
             <div className="p-4 text-center">
               <h3 className="text-white font-semibold">{item.name}</h3>
-              <p className="text-gray-300 text-sm mt-1">{item.desc}</p>
+              <p className="text-gray-300 text-sm mt-1">{item.description}</p>
+              <p className="text-xs text-gray-400">Category: {item.category}</p>
+
+              {/* Show gallery images if available */}
+              {item.images && item.images.length > 0 && (
+                <div className="mt-2 flex gap-2 overflow-x-auto">
+                  {item.images.map((img, i) => (
+                    <img
+                      key={i}
+                      src={img}
+                      alt={`${item.name} ${i}`}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                  ))}
+                </div>
+              )}
+
               {item.price && (
                 <p className="text-yellow-400 font-bold mt-2">₹{item.price}</p>
               )}
