@@ -4,7 +4,7 @@ import { supabase } from "../../supabaseClient";
 
 export default function ProductForm() {
   const [name, setName] = useState("");
-  const [desc, setDesc] = useState("");
+  const [description, setdescription] = useState("");
   const [thumbnail, setThumbnail] = useState("");
   const [images, setImages] = useState(["", "", "", "", ""]);
   const [price, setPrice] = useState("");
@@ -33,7 +33,7 @@ export default function ProductForm() {
     try {
       const payload = {
         name,
-        desc,
+        description,
         productimagelink: thumbnail,
         images: images.filter(Boolean),
         price: price ? Number(price) : null,
@@ -52,7 +52,7 @@ export default function ProductForm() {
       if (error) throw error;
       setMessage("Product added successfully");
       // reset form
-      setName(""); setDesc(""); setThumbnail(""); setImages(["", "", "", "", ""]);
+      setName(""); setdescription(""); setThumbnail(""); setImages(["", "", "", "", ""]);
       setPrice(""); setCategory("male"); setSizes([]); setStock(0);
     } catch (err) {
       console.error(err);
@@ -72,8 +72,8 @@ export default function ProductForm() {
         </div>
 
         <div>
-          <label className="block text-sm">Item description</label>
-          <textarea value={desc} onChange={e => setDesc(e.target.value)} className="w-full input" />
+          <label className="block text-sm">Item descriptionription</label>
+          <textarea value={description} onChange={e => setdescription(e.target.value)} className="w-full input" />
         </div>
 
         <div>
