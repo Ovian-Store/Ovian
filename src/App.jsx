@@ -11,6 +11,10 @@ import ResetPassword from "./Pages/ResetPassword";
 import UpdatePassword from "./Pages/UpdatePassword";
 import { supabase } from "./supabaseClient";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
+import CartPage from "./Pages/CartPage";
+import Checkout from "./Pages/Checkout";
+import OrdersListAdmin from "./Pages/Admin/OrdersList"; // admin orders
+import OrdersPage from "./Pages/OrdersPage"; // optional: user orders
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -42,11 +46,13 @@ export default function App() {
         <Route path="/product/:id" element={<ProductId />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<CategoryDetail />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<OrdersPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/orders" element={<OrdersListAdmin />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/update-password" element={<UpdatePassword />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        
       </Routes>
     </div>
   );
